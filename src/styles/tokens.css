@@ -1,0 +1,80 @@
+/*
+ * Токены панели предзаказов.
+ *
+ * Инструмент для ежедневной работы: плотность важнее воздуха, скорость
+ * считывания важнее эффектности. Единственный выразительный элемент —
+ * цветная полоса статуса по левому краю строки: она позволяет оценить
+ * состояние очереди боковым зрением, не читая колонку.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+.alterlit-dashboard {
+  /* Основа: холодная бумага под офисным светом, не кремовая. */
+  --paper: #f6f6f4;
+  --surface: #ffffff;
+  --surface-sunken: #fbfbfa;
+  --surface-hover: #f2f4f8;
+
+  --ink: #191c21;
+  --ink-soft: #4a515b;
+  --ink-muted: #767d87;
+
+  --hairline: #e4e5e1;
+  --hairline-strong: #d3d5d0;
+
+  /* Акцент — глубокий печатный синий. */
+  --accent: #22357a;
+  --accent-hover: #1a2a63;
+  --accent-tint: #e9ecf6;
+  --focus: #4a6fd4;
+
+  /*
+   * Семь статусов разведены не только по оттенку, но и по смыслу:
+   * «отказ» — нейтрально-серый, это штатный исход; «товар потерян» —
+   * красный, это авария, требующая вмешательства.
+   */
+  --st-new-fg: #1e4ba8;
+  --st-new-bg: #e8eefa;
+  --st-new-rail: #2b5fc9;
+
+  --st-in-work-fg: #8a5300;
+  --st-in-work-bg: #fbf0db;
+  --st-in-work-rail: #c27a08;
+
+  --st-processed-fg: #0d6b5e;
+  --st-processed-bg: #dcefeb;
+  --st-processed-rail: #128977;
+
+  --st-reserved-fg: #5b3fb5;
+  --st-reserved-bg: #ebe6fa;
+  --st-reserved-rail: #7255d1;
+
+  --st-completed-fg: #1b6b36;
+  --st-completed-bg: #e1f1e5;
+  --st-completed-rail: #2a8c4a;
+
+  --st-rejected-fg: #565c65;
+  --st-rejected-bg: #ebeced;
+  --st-rejected-rail: #8a9099;
+
+  --st-lost-fg: #a9231c;
+  --st-lost-bg: #fbe5e3;
+  --st-lost-rail: #c8352c;
+
+  --st-unknown-fg: #767d87;
+  --st-unknown-bg: #f0f0ee;
+  --st-unknown-rail: #cfd1cc;
+
+  --pay-paid: #2a8c4a;
+  --pay-unpaid: #c27a08;
+
+  --font-ui: "Golos Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 7px;
+
+  --row-rail: 3px;
+  --shadow-sticky: 0 1px 0 var(--hairline-strong), 0 6px 12px -10px rgba(25, 28, 33, 0.35);
+}

@@ -1,0 +1,600 @@
+/* ── Панель фильтров ─────────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 12px 14px;
+  margin-bottom: -1px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* Второй ярус: оплата слева, поиск справа. */
+.toolbar__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group__label {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+
+/*
+ * Оплата — взаимоисключающий выбор из трёх, поэтому не чипы, а сегменты:
+ * форма элемента сама говорит, что выбрать можно только одно.
+ */
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.segmented__item {
+  font: inherit;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 0;
+  border-left: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.segmented__item:first-child {
+  border-left: 0;
+}
+
+.segmented__item:hover {
+  background: var(--surface-hover);
+  color: var(--accent);
+}
+
+.segmented__item[aria-pressed="true"] {
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font: inherit;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 100px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Статус без единого заказа: виден как часть словаря, но нажимать нечего. */
+.chip:disabled {
+  color: #a8ada6;
+  border-color: var(--hairline);
+  background: var(--surface-sunken);
+  cursor: default;
+}
+
+.chip:disabled:hover {
+  border-color: var(--hairline);
+  color: #a8ada6;
+}
+
+.chip__count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.65;
+}
+
+.search {
+  position: relative;
+  margin-left: auto;
+  min-width: 240px;
+  flex: 0 1 330px;
+}
+
+.search__input {
+  font: inherit;
+  width: 100%;
+  padding: 7px 30px 7px 12px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.search__input::placeholder {
+  color: var(--ink-muted);
+}
+
+.search__input:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+.search__clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 7px;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.search__clear:hover {
+  color: var(--ink);
+}
+
+/* ── Таблица ─────────────────────────────────────────────────────────── */
+
+.table-frame {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  overflow-x: auto;
+}
+
+.orders {
+  width: 100%;
+  min-width: 1340px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.orders th,
+.orders td {
+  padding: 9px 14px;
+  vertical-align: top;
+}
+
+/* Дата и время держатся в одну строку каждая, иначе строка раздувается втрое. */
+.cell--date {
+  white-space: nowrap;
+}
+
+.orders thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding-top: 11px;
+  padding-bottom: 11px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: var(--surface);
+  border-bottom: 1px solid var(--hairline-strong);
+  box-shadow: var(--shadow-sticky);
+  white-space: nowrap;
+}
+
+/* Колонка № шире прочих слева на ширину цветной полосы статуса. */
+.orders thead th:first-child,
+.orders tbody td:first-child {
+  padding-left: 17px;
+}
+
+.orders__sort {
+  font: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.orders__sort:hover {
+  color: var(--accent);
+}
+
+.orders__sort[aria-sort="ascending"],
+.orders__sort[aria-sort="descending"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/*
+ * Указатель сортировки виден только на активной колонке и при наведении:
+ * восемь одинаковых значков в шапке читаются как рябь, а не как подсказка.
+ */
+.orders__sort-mark {
+  font-size: 9px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.orders__sort:hover .orders__sort-mark,
+.orders__sort:focus-visible .orders__sort-mark,
+.orders__sort[aria-sort="ascending"] .orders__sort-mark,
+.orders__sort[aria-sort="descending"] .orders__sort-mark {
+  opacity: 1;
+}
+
+.orders tbody tr.row {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.orders tbody tr.row:hover {
+  background: var(--surface-hover);
+}
+
+/*
+ * Цветная полоса статуса. Главный визуальный приём таблицы: состояние
+ * очереди читается при прокрутке, без чтения колонки «Статус».
+ */
+.row__lead {
+  position: relative;
+}
+
+.row__lead::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--row-rail);
+  background: var(--row-rail-color, transparent);
+}
+
+/* ── Содержимое ячеек ────────────────────────────────────────────────── */
+
+.cell__primary {
+  display: block;
+  color: var(--ink);
+}
+
+.cell__secondary {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--ink-muted);
+}
+
+.cell__num {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.cell__uuid {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  word-break: break-all;
+}
+
+.cell--money {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cell--money .cell__primary {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.cell__name {
+  font-weight: 500;
+}
+
+/*
+ * Ссылка в ячейке остаётся блочной, чтобы занимать свою строку, но сжимается
+ * по тексту: иначе и подчёркивание, и кликабельная область растягивались бы
+ * на всю ширину колонки — по телефону можно было бы попасть, целясь в пустоту
+ * правее номера. Подчёркиваем через text-decoration, а не border-bottom:
+ * линия должна идти по тексту, в том числе если он перенёсся.
+ */
+.cell__link {
+  width: fit-content;
+  max-width: 100%;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.cell__link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cell__empty {
+  color: #b4b8b2;
+}
+
+/*
+ * Второй уровень внутри ячейки: «кому звонить» и «куда везти» — разные
+ * действия, поэтому адрес отделён линией, а не просто ещё одной строкой.
+ */
+.subblock {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--hairline);
+}
+
+.subblock__text {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+
+/*
+ * Адрес — ссылка на карту, но в таблице из 25 строк подчёркивать её постоянно
+ * значит превратить колонку в частокол. Affordance появляется при наведении.
+ */
+.subblock__text--link {
+  width: fit-content;
+  max-width: 100%;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.subblock__text--link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tag {
+  display: inline-block;
+  margin-bottom: 3px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.tag--link {
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+
+.tag--link:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.book__isbn {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+/* Книга: обложка + название. */
+.book {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.book__cover {
+  flex: none;
+  width: 28px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--hairline);
+}
+
+.book__cover--blank {
+  display: block;
+}
+
+.book__text {
+  min-width: 0;
+}
+
+.book__title {
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Бейджи ──────────────────────────────────────────────────────────── */
+
+/*
+ * Бейдж-плашка со встроенным <select>. Цвет несёт обёртка, выбор — нативный
+ * список: он не обрезается контейнером таблицы и умеет клавиатуру сам.
+ */
+.pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border-radius: 100px;
+  color: var(--badge-fg);
+  background: var(--badge-bg);
+}
+
+.pill__select {
+  appearance: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  padding: 3px 21px 3px 9px;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.pill__select:hover:not(:disabled) {
+  border-color: currentColor;
+}
+
+.pill__select:disabled {
+  cursor: progress;
+  opacity: 0.55;
+}
+
+/* Список рисует система — задаём читаемые цвета явно. */
+.pill__select option {
+  color: var(--ink);
+  background: var(--surface);
+  font-weight: 400;
+}
+
+.pill__caret {
+  position: absolute;
+  right: 8px;
+  font-size: 9px;
+  line-height: 1;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Оплата легче основного статуса: точка вместо заливки. */
+.pill--pay {
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.pill__dot {
+  position: absolute;
+  left: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.pay--paid .pill__dot {
+  background: var(--pay-dot);
+}
+
+.pay--not_paid .pill__dot {
+  border: 1.5px solid var(--pay-dot);
+}
+
+.pill__select--pay {
+  padding-left: 22px;
+  font-weight: 400;
+  font-size: 13px;
+}
+
+/* ── Действия ────────────────────────────────────────────────────────── */
+
+.cell--actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── Скелетоны и пустые состояния ────────────────────────────────────── */
+
+.skeleton {
+  display: block;
+  height: 11px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #eceded 25%, #f5f6f6 50%, #eceded 75%);
+  background-size: 300% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+.skeleton + .skeleton {
+  margin-top: 6px;
+  width: 60%;
+  height: 9px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+.empty {
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--ink-muted);
+}
+
+.empty__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.empty__text {
+  margin: 0 0 16px;
+}
+
+.table-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 0 3px;
+  font-size: 12.5px;
+  color: var(--ink-muted);
+}
+
+@media (max-width: 720px) {
+  .shell {
+    padding: 20px 12px 48px;
+  }
+
+  .search {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}

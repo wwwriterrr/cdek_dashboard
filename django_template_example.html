@@ -1,0 +1,40 @@
+{# Пример подключения собранной панели. #}
+{# DASHBOARD_VERSION — любая строка, меняющаяся при деплое: #}
+{# хэш коммита, дата сборки, номер релиза. Имена файлов фиксированные, #}
+{# без хэшей, поэтому кэш сбрасывается только этим параметром. #}
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Предзаказы — Alterlit</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="stylesheet" href="/assets/books/dashboard/dashboard.css?v={{ DASHBOARD_VERSION }}">
+  </head>
+  <body>
+    <div id="alterlit-dashboard"></div>
+    <script src="/assets/books/dashboard/dashboard.js?v={{ DASHBOARD_VERSION }}" defer></script>
+  </body>
+</html>
+
+{#
+  Если STATIC_URL = "/assets/", то же самое через тег static:
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'books/dashboard/dashboard.css' %}?v={{ DASHBOARD_VERSION }}">
+    <script src="{% static 'books/dashboard/dashboard.js' %}?v={{ DASHBOARD_VERSION }}" defer></script>
+
+  Деплой:
+    npm run build
+    rsync -a --delete dist/ <project>/static/books/dashboard/
+    ./manage.py collectstatic
+
+  Панель собирается с base=/assets/books/dashboard/, поэтому пути к шрифтам
+  и картинкам внутри CSS резолвятся именно оттуда. Другой префикс —
+  соберите с ним:
+    VITE_STATIC_BASE=/s/books/dashboard/ npm run build
+#}
