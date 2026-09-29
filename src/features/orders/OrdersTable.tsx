@@ -82,7 +82,8 @@ export function OrdersTable({ orders, loading, totalCount, busyId, onPatch }: Pr
           <col style={{ width: "140px" }} />
           <col style={{ width: "130px" }} />
           <col style={{ width: "128px" }} />
-          <col style={{ width: "96px" }} />
+          {/* «?» и «Создать заказ в СДЭК» в одну строку либо uuid СДЭК. */}
+          <col style={{ width: "226px" }} />
         </colgroup>
         <thead>
           <tr>

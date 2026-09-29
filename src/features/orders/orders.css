@@ -530,7 +530,512 @@
 
 .cell--actions {
   text-align: right;
+}
+
+.cdek {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+/*
+ * Контурная, а не залитая: кнопка стоит почти в каждой строке, и сплошной
+ * синий столбец перетягивал бы внимание со статусов.
+ */
+/* .btn из app.css подключается позже — удваиваем класс, чтобы перебить его. */
+.btn.cdek__create {
+  /* По высоте вровень с бейджами статусов в той же строке. */
+  padding: 2px 9px 2px 7px;
+  gap: 4px;
+  font-size: 12.5px;
+  line-height: 1.35;
   white-space: nowrap;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn.cdek__create:hover:not(:disabled) {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+}
+
+.cdek__create .btn__spinner {
+  width: 11px;
+  height: 11px;
+  margin: 0 1.5px;
+}
+
+.cdek__icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+
+.cdek__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cdek__help {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.cdek__help:hover {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.cdek__label {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.cdek__uuid {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink);
+  text-align: right;
+  word-break: break-all;
+}
+
+.cdek__error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--st-lost-fg);
+  text-align: right;
+}
+
+/* ── Окно «Создание заказа в СДЭК» ───────────────────────────────────── */
+
+.dialog {
+  width: min(480px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 18px 48px -16px rgba(25, 28, 33, 0.35);
+  text-align: left;
+  white-space: normal;
+}
+
+.dialog::backdrop {
+  background: rgba(25, 28, 33, 0.38);
+}
+
+.dialog__body {
+  padding: 20px 22px 22px;
+}
+
+.dialog__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.dialog__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.dialog__meta {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-muted);
+}
+
+.dialog__close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin: -4px -6px 0 0;
+  padding: 0;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.dialog__close:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.dialog__text {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.dialog__warning {
+  margin: 0;
+  padding: 9px 12px;
+  border-left: 3px solid var(--st-in-work-rail);
+  border-radius: var(--radius-sm);
+  background: var(--st-in-work-bg);
+  color: var(--st-in-work-fg);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.dialog__section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+}
+
+.dialog__subtitle {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.link-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link-form__label {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+}
+
+.link-form__input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.link-form__input:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.link-form__input[aria-invalid="true"] {
+  border-color: var(--st-lost-rail);
+}
+
+.link-form__error {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--st-lost-fg);
+}
+
+.link-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ── Окно «Заказ в СДЭК» ─────────────────────────────────────────────── */
+
+.dialog--wide {
+  width: min(620px, calc(100vw - 32px));
+}
+
+.cdek-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/*
+ * Текущий статус — главное, ради чего окно открывают. Цвет — по смыслу,
+ * на тех же токенах, что статусы заказа: зелёный — вручен, янтарный —
+ * ждёт получателя на ПВЗ, красный — проблема, синий — создан, бирюзовый — в пути.
+ */
+.cdek-info__status {
+  --tone-fg: var(--st-processed-fg);
+  --tone-bg: var(--st-processed-bg);
+  --tone-rail: var(--st-processed-rail);
+  padding: 12px 14px;
+  border-left: 3px solid var(--tone-rail);
+  border-radius: var(--radius-sm);
+  background: var(--tone-bg);
+}
+
+.cdek-info__status--created {
+  --tone-fg: var(--st-new-fg);
+  --tone-bg: var(--st-new-bg);
+  --tone-rail: var(--st-new-rail);
+}
+
+.cdek-info__status--waiting {
+  --tone-fg: var(--st-in-work-fg);
+  --tone-bg: var(--st-in-work-bg);
+  --tone-rail: var(--st-in-work-rail);
+}
+
+.cdek-info__status--delivered {
+  --tone-fg: var(--st-completed-fg);
+  --tone-bg: var(--st-completed-bg);
+  --tone-rail: var(--st-completed-rail);
+}
+
+.cdek-info__status--problem {
+  --tone-fg: var(--st-lost-fg);
+  --tone-bg: var(--st-lost-bg);
+  --tone-rail: var(--st-lost-rail);
+}
+
+.cdek-info__status--skeleton {
+  --tone-bg: var(--surface-sunken);
+  --tone-rail: var(--hairline-strong);
+}
+
+.cdek-info__status-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tone-fg);
+}
+
+.cdek-info__status-meta {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.cdek-info__status-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.cdek-info__problems {
+  padding: 10px 14px;
+  border: 1px solid var(--st-lost-rail);
+  border-radius: var(--radius-sm);
+  background: var(--st-lost-bg);
+  color: var(--st-lost-fg);
+  font-size: 13px;
+}
+
+.cdek-info__problems-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.cdek-info__problems ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* Подписи слева, значения справа — читается как карточка, а не как форма. */
+.cdek-info__facts {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  margin: 0;
+  font-size: 13px;
+}
+
+.cdek-info__fact {
+  display: contents;
+}
+
+.cdek-info__fact dt,
+.cdek-info__fact dd {
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.cdek-info__fact:first-child dt,
+.cdek-info__fact:first-child dd {
+  border-top: 0;
+}
+
+.cdek-info__fact dt {
+  padding-right: 12px;
+  color: var(--ink-muted);
+}
+
+.cdek-info__fact dd {
+  color: var(--ink);
+  line-height: 1.45;
+  min-width: 0;
+}
+
+.cdek-info__line {
+  display: block;
+}
+
+.cdek-info__muted {
+  color: var(--ink-muted);
+}
+
+.cdek-info__strong {
+  font-weight: 600;
+}
+
+/* Номер СДЭК выделяется целиком одним кликом — его копируют в чаты и ЛК. */
+.cdek-info__number {
+  display: inline-block;
+  margin-right: 12px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 500;
+  user-select: all;
+}
+
+.cdek-info__track {
+  display: inline;
+  font-size: 12.5px;
+}
+
+.cdek-info__history .dialog__subtitle {
+  margin-bottom: 8px;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Точки на вертикальной линии; текущий статус — залитая точка. */
+.timeline__item {
+  position: relative;
+  padding: 0 0 10px 20px;
+}
+
+.timeline__item::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  bottom: -6px;
+  width: 1px;
+  background: var(--hairline-strong);
+}
+
+.timeline__item:last-child::before {
+  display: none;
+}
+
+.timeline__item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--hairline-strong);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.timeline__item--current::after {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.timeline__name {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.timeline__item--current .timeline__name {
+  font-weight: 600;
+}
+
+.timeline__meta {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.cdek-info__more {
+  margin-left: 10px;
+  font-size: 12.5px;
+}
+
+.cdek-info__ids {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+  font-size: 11.5px;
+  color: var(--ink-muted);
+}
+
+.cdek-info__id {
+  font-family: var(--font-mono);
+  word-break: break-all;
+}
+
+.cdek-info__skeleton-row {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 12px;
+}
+
+.cdek-info__failure {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cdek-info__failure-text {
+  margin: 0;
+  padding: 10px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--st-lost-rail);
+  border-radius: var(--radius-sm);
+  background: var(--st-lost-bg);
+  color: var(--st-lost-fg);
+  font-size: 13px;
+}
+
+@media (max-width: 560px) {
+  .cdek-info__facts {
+    grid-template-columns: 1fr;
+  }
+
+  .cdek-info__fact dd {
+    padding-top: 0;
+    border-top: 0;
+  }
 }
 
 /* ── Скелетоны и пустые состояния ────────────────────────────────────── */

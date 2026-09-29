@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { PaySelect } from "../../components/PaySelect";
 import { StatusSelect } from "../../components/StatusSelect";
+import { CdekAction } from "./CdekAction";
 import { statusRailColor } from "../../lib/statusTokens";
 import { EMPTY, formatDate, formatMoney, formatPhone, formatTime } from "../../lib/format";
 import { addressMapUrl, pickupPointMapUrl } from "../../lib/maps";
@@ -160,9 +161,8 @@ export function OrderRow({ order, busy, onPatch }: Props) {
         />
       </td>
 
-      {/* Кнопки управления появятся здесь после согласования состава действий. */}
       <td className="cell--actions">
-        <Empty />
+        <CdekAction order={order} />
       </td>
     </tr>
   );

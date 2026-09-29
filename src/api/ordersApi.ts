@@ -1,6 +1,8 @@
 import { baseApi } from "./baseApi";
 import { normalizeOrder } from "../lib/normalize";
-import type { OrderDto, OrdersResponse } from "../types/api";
+import { normalizeCdekInfo } from "../lib/cdekInfo";
+import type { CdekInfo } from "../lib/cdekInfo";
+import type { CdekOrderInfoResponse, OrderDto, OrdersResponse } from "../types/api";
 import type { Order, OrderStatus, PayStatus } from "../types/domain";
 
 /** Умолчание бэка. Держим то же число, чтобы первый запрос был обычным. */
@@ -19,6 +21,17 @@ export interface OrderPatch {
   id: string;
   status?: OrderStatus;
   payStatus?: PayStatus;
+}
+
+export interface CdekOrderResult {
+  /** order_uuid созданного заказа в СДЭК. null — бэк ответил успехом, но без uuid. */
+  uuid: string | null;
+}
+
+export interface CdekLink {
+  id: string;
+  /** uuid, номер ИМ или номер заказа СДЭК — непустая строка. */
+  orderUuid: string;
 }
 
 /**
@@ -109,7 +122,96 @@ export const ordersApi = baseApi.injectEndpoints({
         }
       },
     }),
+
+    /**
+     * Создание заказа в СДЭК. Бэк сам собирает данные заказа, отправляет их
+     * в API СДЭК и отвечает {"msg": "ok", "uuid": "..."}.
+     *
+     * Здесь никакого оптимизма: пока СДЭК не подтвердил, заказа там нет.
+     * Полученный uuid и статус «в работе», который бэк ставит заодно, кладём
+     * в строку, чтобы она обновилась без перезапроса всего списка.
+     */
+    createCdekOrder: build.mutation<CdekOrderResult, string>({
+      query: (id) => ({ url: `cdek/orders/${id}/`, method: "POST" }),
+      transformResponse: (response: { msg?: string; uuid?: unknown } | null) => ({
+        uuid:
+          typeof response?.uuid === "string" && response.uuid.trim() !== ""
+            ? response.uuid.trim()
+            : null,
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (!data.uuid) return;
+          const uuid = data.uuid;
+          dispatch(
+            ordersApi.util.updateQueryData("getOrders", ANY_LIMIT, (draft) => {
+              const order = draft.orders.find((item) => item.id === id);
+              if (!order) return;
+              order.cdekUuid = uuid;
+              // Бэк при создании в СДЭК переводит заказ «в работу», но отвечает
+              // только uuid — повторяем смену статуса у себя.
+              order.status = "in_work";
+              order.statusRaw = "in_work";
+            }),
+          );
+        } catch {
+          // Ошибку показывает строка — она читает её из состояния мутации.
+        }
+      },
+    }),
+
+    /**
+     * Привязка заказа, который уже создали вручную в ЛК СДЭК: uuid, номер ИМ
+     * или номер заказа СДЭК — бэк разберётся сам, фронт передаёт строку как есть.
+     *
+     * Если бэк ответил заказом целиком — кладём его, иначе записываем в строку
+     * введённый номер.
+     */
+    linkCdekOrder: build.mutation<Order | null, CdekLink>({
+      query: ({ id, orderUuid }) => ({
+        url: `cdek/orders/${id}/`,
+        method: "PATCH",
+        body: { order_uuid: orderUuid },
+      }),
+      transformResponse: (response: OrderDto | { msg?: string } | null): Order | null =>
+        response && typeof response === "object" && "id" in response
+          ? normalizeOrder(response as OrderDto)
+          : null,
+      async onQueryStarted({ id, orderUuid }, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            ordersApi.util.updateQueryData("getOrders", ANY_LIMIT, (draft) => {
+              const index = draft.orders.findIndex((item) => item.id === id);
+              const order = draft.orders[index];
+              if (!order) return;
+              if (data) draft.orders[index] = data;
+              else order.cdekUuid = orderUuid;
+            }),
+          );
+        } catch {
+          // Ошибку показывает окно привязки.
+        }
+      },
+    }),
+
+    /**
+     * Заказ глазами СДЭК: статус, история, посылка, стоимость. Бэк ходит
+     * в API СДЭК на каждый запрос, поэтому окно запрашивает данные при каждом
+     * открытии (refetchOnMountOrArgChange в компоненте) — статусы меняются.
+     */
+    getCdekOrderInfo: build.query<CdekInfo, string>({
+      query: (id) => `cdek/orders/${id}/`,
+      transformResponse: (response: CdekOrderInfoResponse) => normalizeCdekInfo(response),
+    }),
   }),
 });
 
-export const { useGetOrdersQuery, useUpdateOrderMutation } = ordersApi;
+export const {
+  useGetCdekOrderInfoQuery,
+  useGetOrdersQuery,
+  useUpdateOrderMutation,
+  useCreateCdekOrderMutation,
+  useLinkCdekOrderMutation,
+} = ordersApi;

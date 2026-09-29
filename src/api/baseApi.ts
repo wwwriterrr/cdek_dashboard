@@ -101,6 +101,14 @@ export function describeError(error: unknown): ErrorInfo {
       return { message: "Сервер не отвечает. Проверьте соединение и повторите.", access: null };
     }
     if (status === "PARSING_ERROR") {
+      // Упавший Django отвечает HTML-страницей 500 — это не страница входа.
+      const { originalStatus } = error as { originalStatus?: number };
+      if (typeof originalStatus === "number" && originalStatus >= 500) {
+        return {
+          message: `Ошибка на сервере (${originalStatus}). Повторите через минуту.`,
+          access: null,
+        };
+      }
       return {
         message: "Сервер вернул не JSON. Похоже, вместо данных пришла страница входа.",
         access: null,
@@ -112,4 +120,40 @@ export function describeError(error: unknown): ErrorInfo {
     return { message: detail ?? `Запрос не прошёл (${status}).`, access: null };
   }
   return { message: "Не удалось загрузить данные.", access: null };
+}
+
+/**
+ * `details` из ответа создания заказа в СДЭК. Бэк пересказывает ошибку СДЭК —
+ * обычно строкой, но СДЭК отдаёт ошибки списком, и они могут прийти как есть.
+ */
+function readDetails(data: unknown): string | null {
+  if (typeof data !== "object" || data === null) return null;
+  const details = (data as Record<string, unknown>).details;
+  const parts = (Array.isArray(details) ? details : [details])
+    .map((item) => {
+      if (typeof item === "string") return item.trim();
+      if (typeof item === "object" && item !== null) {
+        const message = (item as Record<string, unknown>).message;
+        return typeof message === "string" ? message.trim() : "";
+      }
+      return "";
+    })
+    .filter((part) => part !== "");
+  return parts.length > 0 ? parts.join("; ") : null;
+}
+
+/**
+ * Ошибка создания или привязки заказа в СДЭК. Текст от бэка важнее кода
+ * ответа: в нём причина, которую администратор может исправить сам.
+ * Сначала `details`, затем `error` из отказа по полю ({field, error}).
+ */
+export function describeCdekError(error: unknown): string {
+  if (typeof error === "object" && error !== null && "data" in error) {
+    const data = (error as { data?: unknown }).data;
+    const details = readDetails(data);
+    if (details) return details;
+    const { text, field } = readErrorBody(data);
+    if (field && text) return text;
+  }
+  return describeError(error).message;
 }

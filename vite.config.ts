@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+import { cdekMock } from "./dev/cdekMock.ts";
 
 /**
  * Сборка рассчитана на встраивание в Django-шаблон:
@@ -15,7 +16,8 @@ export default defineConfig(({ mode, command }) => {
   const devCookie = env.VITE_DEV_COOKIE;
 
   return {
-    plugins: [react()],
+    // cdekMock стоит до прокси и не пускает создание заказов СДЭК на боевой бэк.
+    plugins: [react(), cdekMock(env.VITE_CDEK_MOCK)],
     // В проде статика лежит под /assets/books/dashboard/, в dev — от корня,
     // иначе локальный адрес превращался бы в тот же длинный путь.
     base: command === "build" ? env.VITE_STATIC_BASE || "/assets/books/dashboard/" : "/",

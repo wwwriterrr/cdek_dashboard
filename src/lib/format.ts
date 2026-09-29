@@ -75,3 +75,27 @@ export function plural(count: number, one: string, few: string, many: string): s
 export function ordersCountLabel(count: number): string {
   return `${count} ${plural(count, "заказ", "заказа", "заказов")}`;
 }
+
+/** «29 сент., 05:45» — момент события в местном времени. */
+export function formatDateTime(dt: number | null): string {
+  return dt === null ? EMPTY : `${formatDate(dt)}, ${formatTime(dt)}`;
+}
+
+/**
+ * «2026-10-03» → «03 окт.». Дата без времени: собираем её в местном поясе,
+ * иначе new Date("2026-10-03") прочтётся как полночь UTC и западнее Гринвича
+ * уедет на день назад.
+ */
+export function formatCalendarDate(value: string | null): string {
+  const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return value ?? EMPTY;
+  const [, y, m, d] = match;
+  return formatDate(new Date(Number(y), Number(m) - 1, Number(d)).getTime());
+}
+
+/** 600 → «600 г», 1710 → «1,71 кг». */
+export function formatWeight(grams: number | null): string | null {
+  if (grams === null) return null;
+  if (grams < 1000) return `${grams} г`;
+  return `${(grams / 1000).toLocaleString("ru-RU", { maximumFractionDigits: 2 })} кг`;
+}

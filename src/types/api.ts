@@ -73,3 +73,100 @@ export interface SessionSelfResponse {
   username: string;
   groups?: string[] | null;
 }
+
+/**
+ * `GET /api/v1/cdek/orders/<id>/` — заказ как его видит СДЭК.
+ *
+ * `data` — ответ API СДЭК «как есть», бэк его не перекладывает. Описаны
+ * только поля, которые показывает панель; всё optional — СДЭК отдаёт поле,
+ * когда у него есть значение (`delivery_date` — только у врученных,
+ * `keep_free_until` — только у лежащих на ПВЗ).
+ */
+export interface CdekOrderInfoResponse {
+  id: number | string;
+  order_uuid: string;
+  data?: CdekOrderDataDto | null;
+}
+
+export interface CdekOrderDataDto {
+  entity?: CdekEntityDto | null;
+  /** Запросы к СДЭК по заказу; у отклонённых `state: "INVALID"` и `errors`. */
+  requests?: CdekRequestDto[] | null;
+}
+
+export interface CdekEntityDto {
+  uuid?: string;
+  cdek_number?: string | null;
+  /** Номер заказа в ИМ. */
+  number?: string | null;
+  tariff_code?: number | null;
+  shipment_point?: string | null;
+  delivery_point?: string | null;
+  delivery_recipient_cost?: { value?: number | null } | null;
+  recipient?: {
+    name?: string | null;
+    email?: string | null;
+    phones?: { number?: string | null }[] | null;
+  } | null;
+  from_location?: CdekLocationDto | null;
+  to_location?: CdekLocationDto | null;
+  services?: CdekServiceDto[] | null;
+  packages?: CdekPackageDto[] | null;
+  /** Новые сверху, но порядок не гарантирован — сортируем сами. */
+  statuses?: CdekStatusDto[] | null;
+  /** "2026-10-03" */
+  planned_delivery_date?: string | null;
+  /** "2026-09-29" — фактическая дата вручения. */
+  delivery_date?: string | null;
+  /** "2026-10-05T20:59:59Z" — до какого момента заказ бесплатно хранится на ПВЗ. */
+  keep_free_until?: string | null;
+  delivery_detail?: {
+    delivery_sum?: number | null;
+    total_sum?: number | null;
+    delivery_vat_sum?: number | null;
+  } | null;
+}
+
+export interface CdekLocationDto {
+  city?: string | null;
+  region?: string | null;
+  address?: string | null;
+}
+
+export interface CdekServiceDto {
+  code?: string | null;
+  total_sum?: number | null;
+}
+
+export interface CdekPackageDto {
+  /** Граммы. */
+  weight?: number | null;
+  /** Сантиметры. */
+  length?: number | null;
+  width?: number | null;
+  height?: number | null;
+  items?:
+    | {
+        name?: string | null;
+        amount?: number | null;
+        cost?: number | null;
+        /** Наложенный платёж за единицу. */
+        payment?: { value?: number | null } | null;
+      }[]
+    | null;
+}
+
+export interface CdekStatusDto {
+  code?: string | null;
+  name?: string | null;
+  /** "2026-09-29T02:45:29+0000" */
+  date_time?: string | null;
+  city?: string | null;
+  deleted?: boolean | null;
+}
+
+export interface CdekRequestDto {
+  type?: string | null;
+  state?: string | null;
+  errors?: { code?: string | null; message?: string | null }[] | null;
+}
