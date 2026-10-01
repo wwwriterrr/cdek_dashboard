@@ -1,3 +1,5 @@
+import type { Book } from "../types/domain";
+
 const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
   day: "2-digit",
   month: "short",
@@ -98,4 +100,14 @@ export function formatWeight(grams: number | null): string | null {
   if (grams === null) return null;
   if (grams < 1000) return `${grams} г`;
   return `${(grams / 1000).toLocaleString("ru-RU", { maximumFractionDigits: 2 })} кг`;
+}
+
+/** «33 × 3 × 22 см, 540 г». Показываем то, что есть: хоть габариты, хоть вес. */
+export function formatBookSpecs(book: Book): string | null {
+  const parts: string[] = [];
+  if (book.length !== null && book.width !== null && book.height !== null) {
+    parts.push(`${book.length} × ${book.width} × ${book.height} см`);
+  }
+  if (book.weight !== null) parts.push(`${book.weight} г`);
+  return parts.length > 0 ? parts.join(", ") : null;
 }

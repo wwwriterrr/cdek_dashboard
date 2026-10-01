@@ -3,23 +3,20 @@ import { PaySelect } from "../../components/PaySelect";
 import { StatusSelect } from "../../components/StatusSelect";
 import { CdekAction } from "./CdekAction";
 import { statusRailColor } from "../../lib/statusTokens";
-import { EMPTY, formatDate, formatMoney, formatPhone, formatTime } from "../../lib/format";
+import {
+  EMPTY,
+  formatBookSpecs,
+  formatDate,
+  formatMoney,
+  formatPhone,
+  formatTime,
+} from "../../lib/format";
 import { addressMapUrl, pickupPointMapUrl } from "../../lib/maps";
 import type { OrderPatch } from "../../api/ordersApi";
-import type { Book, Order } from "../../types/domain";
+import type { Order } from "../../types/domain";
 
 function Empty() {
   return <span className="cell__empty">{EMPTY}</span>;
-}
-
-/** «33 × 3 × 22 см, 540 г». Показываем то, что есть: хоть габариты, хоть вес. */
-function bookSpecs(book: Book): string | null {
-  const parts: string[] = [];
-  if (book.length !== null && book.width !== null && book.height !== null) {
-    parts.push(`${book.length} × ${book.width} × ${book.height} см`);
-  }
-  if (book.weight !== null) parts.push(`${book.weight} г`);
-  return parts.length > 0 ? parts.join(", ") : null;
 }
 
 interface Props {
@@ -33,7 +30,7 @@ export function OrderRow({ order, busy, onPatch }: Props) {
   const { book, customer } = order;
   const railStyle = { "--row-rail-color": statusRailColor(order.status) } as CSSProperties;
   const phone = formatPhone(customer.phone);
-  const specs = bookSpecs(book);
+  const specs = formatBookSpecs(book);
   const hasDelivery = customer.deliveryPoint !== null || customer.deliveryAddress !== null;
   const addressUrl = addressMapUrl(customer.deliveryAddress);
   const pickupUrl = pickupPointMapUrl(customer.deliveryAddress);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { describeCdekError } from "../../api/baseApi";
 import { useCreateCdekOrderMutation } from "../../api/ordersApi";
 import type { Order } from "../../types/domain";
+import { CdekConfirmDialog } from "./CdekConfirmDialog";
 import { CdekHelpDialog } from "./CdekHelpDialog";
 import { CdekInfoDialog } from "./CdekInfoDialog";
 
@@ -11,14 +12,27 @@ interface Props {
 
 /**
  * Ячейка «Действия»: заказ уже в СДЭК — показываем его uuid и кнопку сведений
- * о нём, ещё нет — кнопку создания. У каждой строки своя мутация, поэтому ожидание и ошибка остаются
- * в своей строке и не мешают работать с соседними.
+ * о нём, ещё нет — кнопку создания. Создание идёт только через окно
+ * подтверждения. У каждой строки своя мутация, поэтому ожидание и ошибка
+ * остаются в своей строке и не мешают работать с соседними.
  */
 export function CdekAction({ order }: Props) {
   const [createOrder, { isLoading, isError, isSuccess, error, reset }] =
     useCreateCdekOrderMutation();
   const [helpOpen, setHelpOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  async function confirmCreate() {
+    try {
+      await createOrder(order.id).unwrap();
+      // Пришёл uuid — строка сама сменится на номер; не пришёл — строка
+      // покажет предупреждение. В обоих случаях окну больше нечего сказать.
+      setConfirmOpen(false);
+    } catch {
+      // Окно остаётся открытым и показывает ошибку — можно повторить.
+    }
+  }
 
   if (order.cdekUuid) {
     return (
@@ -53,7 +67,7 @@ export function CdekAction({ order }: Props) {
           disabled={isLoading}
           onClick={() => {
             reset();
-            void createOrder(order.id);
+            setConfirmOpen(true);
           }}
         >
           {isLoading ? (
@@ -71,7 +85,7 @@ export function CdekAction({ order }: Props) {
           {isLoading ? "Создаём…" : "Создать заказ в СДЭК"}
         </button>
       </div>
-      {isError && (
+      {isError && !confirmOpen && (
         <p className="cdek__error" role="alert">
           {describeCdekError(error)}
         </p>
@@ -84,6 +98,15 @@ export function CdekAction({ order }: Props) {
         </p>
       )}
       {helpOpen && <CdekHelpDialog order={order} onClose={() => setHelpOpen(false)} />}
+      {confirmOpen && (
+        <CdekConfirmDialog
+          order={order}
+          pending={isLoading}
+          error={isError ? describeCdekError(error) : null}
+          onConfirm={() => void confirmCreate()}
+          onClose={() => setConfirmOpen(false)}
+        />
+      )}
     </div>
   );
 }

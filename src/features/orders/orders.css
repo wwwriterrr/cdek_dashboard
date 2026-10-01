@@ -1038,6 +1038,33 @@
   }
 }
 
+/* ── Окно подтверждения создания заказа ─────────────────────────────── */
+
+.confirm__facts {
+  margin-top: 14px;
+}
+
+.confirm__missing {
+  color: var(--st-lost-fg);
+  font-style: italic;
+}
+
+.confirm__error {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border: 1px solid var(--st-lost-rail);
+  border-radius: var(--radius-sm);
+  background: var(--st-lost-bg);
+  color: var(--st-lost-fg);
+  font-size: 13px;
+}
+
+.confirm__actions {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+}
+
 /* ── Скелетоны и пустые состояния ────────────────────────────────────── */
 
 .skeleton {
